@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app')
+        .module('angular-route-breadcrumbs', [])
         .factory('breadcrumbs', breadcrumbs);
 
     breadcrumbs.$inject = ['$rootScope', '$route', '$location'];
