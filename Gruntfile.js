@@ -17,9 +17,10 @@ module.exports = function (grunt) {
 
   // Configurable paths for the application
   var appConfig = {
+    src: 'src',
+    dist: 'dist',
     demo: 'demo',
     public: 'public'
-
   };
 
   // Define the configuration for all the tasks
@@ -35,14 +36,17 @@ module.exports = function (grunt) {
         tasks: ['wiredep']
       },
       js: {
-        files: ['<%= yeoman.demo %>/scripts/{,*/}*.js'],
+        files: [
+          '<%= yeoman.demo %>/scripts/{,*/}*.js',
+          '<%= yeoman.src %>/{,*/}*.js'
+        ],
         tasks: ['newer:jshint:all'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
       },
       jsTest: {
-        files: ['test/spec/{,*/}*.js'],
+        files: ['test/spec/**/*.js'],
         tasks: ['newer:jshint:test', 'karma']
       },
       compass: {
@@ -57,9 +61,9 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         },
         files: [
-          '<%= yeoman.demo %>/{,*/}*.html',
-          '.tmp/styles/{,*/}*.css',
-          '<%= yeoman.demo %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+        '<%= yeoman.demo %>/{,*/}*.html',
+        '.tmp/styles/{,*/}*.css',
+        '<%= yeoman.demo %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
     },
@@ -77,12 +81,12 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
-              connect().use(
-                '/bower_components',
-                connect.static('./bower_components')
-              ),
-              connect.static(appConfig.demo)
+            connect.static('.tmp'),
+            connect().use(
+              '/bower_components',
+              connect.static('./bower_components')
+            ),
+            connect.static(appConfig.demo)
             ];
           }
         }
@@ -92,13 +96,13 @@ module.exports = function (grunt) {
           port: 9001,
           middleware: function (connect) {
             return [
-              connect.static('.tmp'),
-              connect.static('test'),
-              connect().use(
-                '/bower_components',
-                connect.static('./bower_components')
-              ),
-              connect.static(appConfig.demo)
+            connect.static('.tmp'),
+            connect.static('test'),
+            connect().use(
+              '/bower_components',
+              connect.static('./bower_components')
+            ),
+            connect.static(appConfig.demo)
             ];
           }
         }
@@ -120,26 +124,28 @@ module.exports = function (grunt) {
       all: {
         src: [
           'Gruntfile.js',
-          '<%= yeoman.demo %>/scripts/{,*/}*.js'
+          '<%= yeoman.demo %>/scripts/{,*/}*.js',
+          '<%= yeoman.src %>/{,*/}*.js'
         ]
       },
       test: {
         options: {
           jshintrc: 'test/.jshintrc'
         },
-        src: ['test/spec/{,*/}*.js']
+        src: ['test/spec/**/*.js']
       }
     },
 
     // Empties folders to start fresh
     clean: {
+      dist: 'dist',
       demo: {
         files: [{
           dot: true,
           src: [
-            '.tmp',
-            '<%= yeoman.public %>/{,*/}*',
-            '!<%= yeoman.public %>/.git*'
+          '.tmp',
+          '<%= yeoman.public %>/{,*/}*',
+          '!<%= yeoman.public %>/.git*'
           ]
         }]
       },
@@ -206,10 +212,10 @@ module.exports = function (grunt) {
     filerev: {
       demo: {
         src: [
-          '<%= yeoman.public %>/scripts/{,*/}*.js',
-          '<%= yeoman.public %>/styles/{,*/}*.css',
-          '<%= yeoman.public %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-          '<%= yeoman.public %>/styles/fonts/*'
+        '<%= yeoman.public %>/scripts/{,*/}*.js',
+        '<%= yeoman.public %>/styles/{,*/}*.css',
+        '<%= yeoman.public %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+        '<%= yeoman.public %>/styles/fonts/*'
         ]
       }
     },
@@ -268,6 +274,28 @@ module.exports = function (grunt) {
     //   demo: {}
     // },
 
+    // uglify: {
+    //   dist: {
+    //     files: [{
+    //       expand: true,
+    //       cwd: '<%= yeoman.src %>',
+    //       src: '{,*/}*.js',
+    //       dest: '<%= yeoman.dist %>'
+    //     }]
+    //   }
+    // },
+    //
+    // concat: {
+    //   dist: {
+    //     files: [{
+    //       expand: true,
+    //       cwd: '<%= yeoman.src %>',
+    //       src: '{,*/}*.js',
+    //       dest: '<%= yeoman.dist %>'
+    //     }]
+    //   }
+    // },
+
     imagemin: {
       demo: {
         files: [{
@@ -311,6 +339,14 @@ module.exports = function (grunt) {
     // ng-annotate tries to make the code safe for minification automatically
     // by using the Angular long form for dependency injection.
     ngAnnotate: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.src %>',
+          dest: '<%= yeoman.dist %>',
+          src: ['*.js'],
+        }]
+      },
       demo: {
         files: [{
           expand: true,
@@ -330,6 +366,13 @@ module.exports = function (grunt) {
 
     // Copies remaining files to places other tasks can use
     copy: {
+      dist: {
+        expand: true,
+        dot: true,
+        cwd: '<%= yeoman.src %>',
+        dest: '<%= yeoman.dist %>',
+        src: '{,*/}*.js'
+      },
       demo: {
         files: [{
           expand: true,
@@ -367,15 +410,15 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'compass:server'
+      'compass:server'
       ],
       test: [
-        'compass'
+      'compass'
       ],
       demo: [
-        'compass:demo',
-        'imagemin',
-        'svgmin'
+      'compass:demo',
+      'imagemin',
+      'svgmin'
       ]
     },
 
@@ -401,23 +444,23 @@ module.exports = function (grunt) {
       'autoprefixer',
       'connect:livereload',
       'watch'
-    ]);
-  });
+      ]);
+    });
 
-  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run(['serve:' + target]);
-  });
+    grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
+      grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+      grunt.task.run(['serve:' + target]);
+    });
 
-  grunt.registerTask('test', [
+    grunt.registerTask('test', [
     'clean:server',
     'concurrent:test',
     'autoprefixer',
     'connect:test',
     'karma'
-  ]);
+    ]);
 
-  grunt.registerTask('build', [
+    grunt.registerTask('build', [
     'clean:demo',
     'wiredep',
     'useminPrepare',
@@ -426,17 +469,18 @@ module.exports = function (grunt) {
     'concat',
     'ngAnnotate',
     'copy:demo',
+    'copy:dist',
     'cdnify',
     'cssmin',
     'uglify',
     'filerev',
     'usemin',
     'htmlmin'
-  ]);
+    ]);
 
-  grunt.registerTask('default', [
+    grunt.registerTask('default', [
     'newer:jshint',
     'test',
     'build'
-  ]);
-};
+    ]);
+  };
