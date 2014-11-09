@@ -171,11 +171,13 @@ module.exports = function (grunt) {
     wiredep: {
       app: {
         src: ['<%= yeoman.demo %>/index.html'],
-        ignorePath:  /\.\.\//
+        ignorePath:  /\.\.\//,
+        devDependencies: true,
       },
       sass: {
         src: ['<%= yeoman.demo %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
+        ignorePath: /(\.\.\/){1,2}bower_components\//,
+        devDependencies: true,
       }
     },
 
@@ -274,27 +276,28 @@ module.exports = function (grunt) {
     //   demo: {}
     // },
 
-    // uglify: {
-    //   dist: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= yeoman.src %>',
-    //       src: '{,*/}*.js',
-    //       dest: '<%= yeoman.dist %>'
-    //     }]
-    //   }
-    // },
-    //
-    // concat: {
-    //   dist: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= yeoman.src %>',
-    //       src: '{,*/}*.js',
-    //       dest: '<%= yeoman.dist %>'
-    //     }]
-    //   }
-    // },
+    uglify: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.src %>',
+          src: '{,*/}*.js',
+          dest: '<%= yeoman.dist %>',
+          ext: '.min.js'
+        }]
+      }
+    },
+
+    concat: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.src %>',
+          src: '{,*/}*.js',
+          dest: '<%= yeoman.dist %>'
+        }]
+      }
+    },
 
     imagemin: {
       demo: {
