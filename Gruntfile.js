@@ -7,7 +7,7 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -61,9 +61,9 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         },
         files: [
-        '<%= yeoman.demo %>/{,*/}*.html',
-        '.tmp/styles/{,*/}*.css',
-        '<%= yeoman.demo %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+          '<%= yeoman.demo %>/{,*/}*.html',
+          '.tmp/styles/{,*/}*.css',
+          '<%= yeoman.demo %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
     },
@@ -79,14 +79,14 @@ module.exports = function (grunt) {
       livereload: {
         options: {
           open: true,
-          middleware: function (connect) {
+          middleware: function(connect) {
             return [
-            connect.static('.tmp'),
-            connect().use(
-              '/bower_components',
-              connect.static('./bower_components')
-            ),
-            connect.static(appConfig.demo)
+              connect.static('.tmp'),
+              connect().use(
+                '/bower_components',
+                connect.static('./bower_components')
+              ),
+              connect.static(appConfig.demo)
             ];
           }
         }
@@ -94,15 +94,15 @@ module.exports = function (grunt) {
       test: {
         options: {
           port: 9001,
-          middleware: function (connect) {
+          middleware: function(connect) {
             return [
-            connect.static('.tmp'),
-            connect.static('test'),
-            connect().use(
-              '/bower_components',
-              connect.static('./bower_components')
-            ),
-            connect.static(appConfig.demo)
+              connect.static('.tmp'),
+              connect.static('test'),
+              connect().use(
+                '/bower_components',
+                connect.static('./bower_components')
+              ),
+              connect.static(appConfig.demo)
             ];
           }
         }
@@ -143,9 +143,9 @@ module.exports = function (grunt) {
         files: [{
           dot: true,
           src: [
-          '.tmp',
-          '<%= yeoman.public %>/{,*/}*',
-          '!<%= yeoman.public %>/.git*'
+            '.tmp',
+            '<%= yeoman.public %>/{,*/}*',
+            '!<%= yeoman.public %>/.git*'
           ]
         }]
       },
@@ -171,7 +171,7 @@ module.exports = function (grunt) {
     wiredep: {
       app: {
         src: ['<%= yeoman.demo %>/index.html'],
-        ignorePath:  /\.\.\//,
+        ignorePath: /\.\.\//,
         devDependencies: true,
       },
       sass: {
@@ -214,10 +214,10 @@ module.exports = function (grunt) {
     filerev: {
       demo: {
         src: [
-        '<%= yeoman.public %>/scripts/{,*/}*.js',
-        '<%= yeoman.public %>/styles/{,*/}*.css',
-        '<%= yeoman.public %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-        '<%= yeoman.public %>/styles/fonts/*'
+          '<%= yeoman.public %>/scripts/{,*/}*.js',
+          '<%= yeoman.public %>/styles/{,*/}*.css',
+          '<%= yeoman.public %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= yeoman.public %>/styles/fonts/*'
         ]
       }
     },
@@ -246,7 +246,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.public %>/{,*/}*.html'],
       css: ['<%= yeoman.public %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['<%= yeoman.public %>','<%= yeoman.public %>/images']
+        assetsDirs: ['<%= yeoman.public %>', '<%= yeoman.public %>/images']
       }
     },
 
@@ -413,15 +413,15 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-      'compass:server'
+        'compass:server'
       ],
       test: [
-      'compass'
+        'compass'
       ],
       demo: [
-      'compass:demo',
-      'imagemin',
-      'svgmin'
+        'compass:demo',
+        'imagemin',
+        'svgmin'
       ]
     },
 
@@ -435,7 +435,7 @@ module.exports = function (grunt) {
   });
 
 
-  grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
+  grunt.registerTask('serve', 'Compile then start a connect web server', function(target) {
     if (target === 'demo') {
       return grunt.task.run(['build', 'connect:demo:keepalive']);
     }
@@ -447,43 +447,57 @@ module.exports = function (grunt) {
       'autoprefixer',
       'connect:livereload',
       'watch'
-      ]);
-    });
+    ]);
+  });
 
-    grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
-      grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-      grunt.task.run(['serve:' + target]);
-    });
+  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function(target) {
+    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+    grunt.task.run(['serve:' + target]);
+  });
 
-    grunt.registerTask('test', [
+  grunt.registerTask('test', [
     'clean:server',
     'concurrent:test',
     'autoprefixer',
     'connect:test',
     'karma'
+  ]);
+
+  grunt.registerTask('build', function(target) {
+    if (target === 'dist') {
+      return grunt.task.run([
+        'clean:dist',
+        'ngAnnotate:dist',
+        'copy:dist',
+        'concat:dist',
+        'uglify:dist',
+      ]);
+    }
+
+    grunt.task.run([
+      'clean:dist',
+      'clean:demo',
+      'wiredep',
+      'useminPrepare',
+      'concurrent:demo',
+      'autoprefixer',
+      'concat',
+      'ngAnnotate',
+      'copy:demo',
+      'copy:dist',
+      'cdnify',
+      'cssmin',
+      'uglify',
+      'filerev',
+      'usemin',
+      'htmlmin'
     ]);
 
-    grunt.registerTask('build', [
-    'clean:demo',
-    'wiredep',
-    'useminPrepare',
-    'concurrent:demo',
-    'autoprefixer',
-    'concat',
-    'ngAnnotate',
-    'copy:demo',
-    'copy:dist',
-    'cdnify',
-    'cssmin',
-    'uglify',
-    'filerev',
-    'usemin',
-    'htmlmin'
-    ]);
+  });
 
-    grunt.registerTask('default', [
+  grunt.registerTask('default', [
     'newer:jshint',
     'test',
     'build'
-    ]);
-  };
+  ]);
+};
