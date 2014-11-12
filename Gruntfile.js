@@ -21,7 +21,7 @@ module.exports = function(grunt) {
     dist: 'dist',
     demo: 'demo',
     public: 'public',
-    temp: '.temp'
+    temp: '.tmp-dist'
   };
 
   // Define the configuration for all the tasks
