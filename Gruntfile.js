@@ -20,7 +20,8 @@ module.exports = function(grunt) {
     src: 'src',
     dist: 'dist',
     demo: 'demo',
-    public: 'public'
+    public: 'public',
+    temp: '.temp'
   };
 
   // Define the configuration for all the tasks
@@ -280,7 +281,7 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= yeoman.src %>',
+          cwd: '<%= yeoman.dist %>',
           src: '{,*/}*.js',
           dest: '<%= yeoman.dist %>',
           ext: '.min.js'
@@ -290,12 +291,15 @@ module.exports = function(grunt) {
 
     concat: {
       dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.src %>',
-          src: '{,*/}*.js',
-          dest: '<%= yeoman.dist %>'
-        }]
+        src: [
+          'node_modules/grunt-traceur/node_modules/traceur/bin/traceur-runtime.js',
+          '<%= yeoman.temp %>/{,*/}*.js'
+        ],
+        dest: '<%= yeoman.dist %>/angular-route-breadcrumbs.js'
+      },
+      es6: {
+        src: '<%= yeoman.temp %>/{,*/}*.js',
+        dest: '<%= yeoman.dist %>/angular-route-breadcrumbs.es6.js'
       }
     },
 
@@ -343,12 +347,8 @@ module.exports = function(grunt) {
     // by using the Angular long form for dependency injection.
     ngAnnotate: {
       dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.src %>',
-          dest: '<%= yeoman.dist %>',
-          src: ['*.js'],
-        }]
+        expand: true,
+        src: ['<%= yeoman.temp %>/*.js']
       },
       demo: {
         files: [{
@@ -367,15 +367,8 @@ module.exports = function(grunt) {
       }
     },
 
-    // Copies remaining files to places other tasks can use
     copy: {
-      dist: {
-        expand: true,
-        dot: true,
-        cwd: '<%= yeoman.src %>',
-        dest: '<%= yeoman.dist %>',
-        src: '{,*/}*.js'
-      },
+      // Copies remaining files to places other tasks can use
       demo: {
         files: [{
           expand: true,
@@ -407,6 +400,12 @@ module.exports = function(grunt) {
         cwd: '<%= yeoman.demo %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      temp: {
+        expand: true,
+        cwd: '<%= yeoman.src %>',
+        dest: '<%= yeoman.temp %>',
+        src: '{,*/}*.js'
       }
     },
 
@@ -431,9 +430,18 @@ module.exports = function(grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
+    },
+
+    traceur: {
+      options: {
+        // traceur options here
+      },
+      dist: {
+        expand: true,
+        src: ['<%= yeoman.temp %>/*.js']
+      }
     }
   });
-
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function(target) {
     if (target === 'demo') {
@@ -463,37 +471,36 @@ module.exports = function(grunt) {
     'karma'
   ]);
 
-  grunt.registerTask('build', function(target) {
-    if (target === 'dist') {
-      return grunt.task.run([
-        'clean:dist',
-        'ngAnnotate:dist',
-        'copy:dist',
-        'concat:dist',
-        'uglify:dist',
-      ]);
-    }
+  grunt.registerTask('build:dist', [
+    'clean:dist',
+    'copy:temp',
+    'traceur:dist',
+    'ngAnnotate:dist',
+    'concat:dist',
+    'concat:es6',
+    'uglify:dist',
+  ]);
 
-    grunt.task.run([
-      'clean:dist',
-      'clean:demo',
-      'wiredep',
-      'useminPrepare',
-      'concurrent:demo',
-      'autoprefixer',
-      'concat',
-      'ngAnnotate',
-      'copy:demo',
-      'copy:dist',
-      'cdnify',
-      'cssmin',
-      'uglify',
-      'filerev',
-      'usemin',
-      'htmlmin'
-    ]);
+  grunt.registerTask('build:demo', [
+    'clean:demo',
+    'wiredep',
+    'useminPrepare',
+    'concurrent:demo',
+    'autoprefixer',
+    'ngAnnotate:demo',
+    'copy:demo',
+    'cdnify',
+    'cssmin',
+    'uglify',
+    'filerev',
+    'usemin',
+    'htmlmin'
+  ]);
 
-  });
+  grunt.registerTask('build', [
+    'build:dist',
+    'build:demo'
+  ]);
 
   grunt.registerTask('default', [
     'newer:jshint',
