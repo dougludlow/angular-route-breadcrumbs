@@ -1,4 +1,6 @@
-﻿(function () {
+import Breadcrumb from 'breadcrumb'﻿;
+
+(function () {
     'use strict';
 
     angular
@@ -18,22 +20,6 @@
                 names: names,
                 rebuild: buildBreadbrumbs
             };
-
-        function Breadcrumb(route, path) {
-            this.name = route.name || null;
-            this.path = path || '/';
-            this.$$route = route;
-        }
-
-        Breadcrumb.create = function (path) {
-            var route = getRoute(path);
-            return route ? new Breadcrumb(route, path) : null;
-        }
-
-        Breadcrumb.prototype.updateName = function () {
-            var override = getNameOverride(this);
-            this.name = override || this.$$route.name || null;
-        };
 
         activate();
 
@@ -65,48 +51,7 @@
             }
             return breadcrumbs;
         }
-
-        function getRoute(path) {
-            var route;
-            angular.forEach(routes, function (r) {
-                if (!route && r.regexp && r.regexp.test(path))
-                    route = getRedirectedRoute(r);
-            });
-            return route;
-        }
-
-        function getRedirectedRoute(route) {
-            if (hops > 5) { // for sanity
-                hops = 0
-                return null;
-            }
-
-            route = route.redirectTo ? routes[route.redirectTo] : route;
-
-            if (route.redirectTo) {
-                hops++;
-                return getRedirectedRoute(route);
-            }
-            else {
-                hops = 0;
-                return route;
-            }
-        }
-
-        function getNameOverride(breadcrumb) {
-            var names = breadcrumbsService.names,
-                name = null;
-
-            if (names) {
-                angular.forEach(names, function (n, path) {
-                    if(!name && breadcrumb.$$route.regexp.test(path))
-                        name = n;
-                });
-            }
-
-            return name;
-        }
-
+        
         function buildBreadbrumbs() {
 
             var index, breadcrumb,
