@@ -1,4 +1,4 @@
-import Breadcrumb from 'breadcrumb'﻿;
+import Breadcrumb from './breadcrumb'﻿;
 
 var sniffer;
 

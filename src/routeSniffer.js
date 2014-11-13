@@ -3,7 +3,7 @@ export default class RouteSniffer {
     this.routes = routes;
   }
 
-  function getRoute(path) {
+  getRoute(path) {
     var route;
     angular.forEach(this.routes, function(r) {
       if (!route && r.regexp && r.regexp.test(path))
@@ -12,7 +12,7 @@ export default class RouteSniffer {
     return route;
   }
 
-  function getRedirectedRoute(route) {
+  getRedirectedRoute(route) {
     if (hops > 5) { // for sanity
       hops = 0
       return null;

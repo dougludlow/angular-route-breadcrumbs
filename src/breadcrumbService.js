@@ -1,5 +1,5 @@
-import RouteSniffer from 'routeSniffer';
-import BreadcrumbBuilder from 'breadcrumbBuilder';
+import RouteSniffer from './routeSniffer';
+import BreadcrumbBuilder from './breadcrumbBuilder';
 
 var location,
   breadcrumbs, filteredBreadcrumbs,
