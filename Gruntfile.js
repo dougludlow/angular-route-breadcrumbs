@@ -21,7 +21,6 @@ module.exports = function(grunt) {
     dist: 'dist',
     demo: 'demo',
     public: 'public',
-    temp: '.tmp-dist'
   };
 
   // Define the configuration for all the tasks
@@ -289,17 +288,20 @@ module.exports = function(grunt) {
       }
     },
 
-    concat: {
+    jsbeautifier: {
       dist: {
-        src: [
-          'node_modules/grunt-traceur/node_modules/traceur/bin/traceur-runtime.js',
-          '<%= yeoman.temp %>/{,*/}*.js'
-        ],
-        dest: '<%= yeoman.dist %>/angular-route-breadcrumbs.js'
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.dist %>',
+          src: '{,*/}*.js',
+          dest: '<%= yeoman.dist %>',
+          ext: '.min.js'
+        }]
       },
-      es6: {
-        src: '<%= yeoman.temp %>/{,*/}*.js',
-        dest: '<%= yeoman.dist %>/angular-route-breadcrumbs.es6.js'
+      options: {
+        js: {
+          indentSize: 2,
+        }
       }
     },
 
@@ -348,7 +350,7 @@ module.exports = function(grunt) {
     ngAnnotate: {
       dist: {
         expand: true,
-        src: ['<%= yeoman.temp %>/*.js']
+        src: ['<%= yeoman.dist %>/*.js']
       },
       demo: {
         files: [{
@@ -400,12 +402,6 @@ module.exports = function(grunt) {
         cwd: '<%= yeoman.demo %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
-      },
-      temp: {
-        expand: true,
-        cwd: '<%= yeoman.src %>',
-        dest: '<%= yeoman.temp %>',
-        src: '{,*/}*.js'
       }
     },
 
@@ -432,13 +428,13 @@ module.exports = function(grunt) {
       }
     },
 
-    traceur: {
-      options: {
-        // traceur options here
-      },
+    browserify: {
       dist: {
-        expand: true,
-        src: ['<%= yeoman.temp %>/*.js']
+        src: '<%= yeoman.src %>/{,*/}*.js',
+        dest: '<%= yeoman.dist %>/angular-route-breadcrumbs.js',
+        options: {
+          transform: ['6to5-browserify']
+        }
       }
     }
   });
@@ -473,12 +469,10 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build:dist', [
     'clean:dist',
-    'copy:temp',
-    'traceur:dist',
+    'browserify:dist',
     'ngAnnotate:dist',
-    'concat:dist',
-    'concat:es6',
-    'uglify:dist',
+    'jsbeautifier:dist',
+    'uglify:dist'
   ]);
 
   grunt.registerTask('build:demo', [
