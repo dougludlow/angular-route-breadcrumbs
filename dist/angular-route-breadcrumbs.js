@@ -214,20 +214,18 @@
       if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
     };
 
+    var hops;
+
     var RouteSniffer = (function() {
-      var RouteSniffer = function RouteSniffer() {};
+      var RouteSniffer = function RouteSniffer(routes) {
+        this.routes = routes;
+      };
 
       _classProps(RouteSniffer, null, {
-        contructor: {
-          writable: true,
-          value: function(routes) {
-            this.routes = routes;
-          }
-        },
         getRoute: {
           writable: true,
           value: function(path) {
-            var route;
+            var route = null;
             angular.forEach(this.routes, function(r) {
               if (!route && r.regexp && r.regexp.test(path)) route = getRedirectedRoute(r);
             });
@@ -243,7 +241,7 @@
               return null;
             }
 
-            route = route.redirectTo ? routes[route.redirectTo] : route;
+            route = route.redirectTo ? this.routes[route.redirectTo] : route;
 
             if (route.redirectTo) {
               hops++;
